@@ -11,22 +11,49 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.FrameLayout;
 
 public class UnityPlayerActivity extends Activity
 {
 	protected UnityPlayer mUnityPlayer; // don't change the name of this variable; referenced from native code
 
 	// Setup activity layout
+//	@Override protected void onCreate (Bundle savedInstanceState)
+//	{
+//		requestWindowFeature(Window.FEATURE_NO_TITLE);
+//		super.onCreate(savedInstanceState);
+//
+//		getWindow().setFormat(PixelFormat.RGBX_8888); // <--- This makes xperia play happy
+//
+//		mUnityPlayer = new UnityPlayer(this);
+//		setContentView(mUnityPlayer);
+//		mUnityPlayer.requestFocus();
+//	}
+	// Setup activity layout
 	@Override protected void onCreate (Bundle savedInstanceState)
 	{
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_unity);
 
 		getWindow().setFormat(PixelFormat.RGBX_8888); // <--- This makes xperia play happy
 
 		mUnityPlayer = new UnityPlayer(this);
-		setContentView(mUnityPlayer);
-		mUnityPlayer.requestFocus();
+		int glesMode = mUnityPlayer.getSettings().getInt("gles_mode", 1);
+		mUnityPlayer.init(glesMode, false);
+
+		FrameLayout layout = (FrameLayout) findViewById(R.id.unityView);
+		FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
+		layout.addView(mUnityPlayer, 0, lp);
+		mUnityPlayer.windowFocusChanged(true);
+		mUnityPlayer.resume();
+
+		mButtonZoomIn = (Button)findViewById(R.id.zoomInButton);
+		mButtonZoomIn.setOnClickListener(mButtonZoomInOnClickListener);
+		mButtonZoomOut = (Button)findViewById(R.id.zoomOutButton);
+		mButtonZoomOut.setOnClickListener(mButtonZoomOutOnClickListener);
+
 	}
 
 	// Quit Unity
@@ -88,4 +115,22 @@ public class UnityPlayerActivity extends Activity
 		return mUnityPlayer.injectEvent(event);
 	}
 	/*API12*/ public boolean onGenericMotionEvent(MotionEvent event)  { return mUnityPlayer.injectEvent(event); }
+
+
+	private Button mButtonZoomIn;
+	private View.OnClickListener mButtonZoomInOnClickListener = new View.OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			Log.d("Hughie", "Zoom In Button onClick");
+			mUnityPlayer.UnitySendMessage("Manager", "ZoomIn", "");
+		}
+	};
+	private Button mButtonZoomOut;
+	private View.OnClickListener mButtonZoomOutOnClickListener = new View.OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			Log.d("Hughie", "Zoom Out Button onClick");
+			mUnityPlayer.UnitySendMessage("Manager", "ZoomOut", "");
+		}
+	};
 }

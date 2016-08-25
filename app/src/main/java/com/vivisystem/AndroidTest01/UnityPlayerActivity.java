@@ -46,7 +46,7 @@ public class UnityPlayerActivity extends Activity
 		FrameLayout layout = (FrameLayout) findViewById(R.id.unityView);
 		FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
 		layout.addView(mUnityPlayer, 0, lp);
-		mUnityPlayer.windowFocusChanged(true);
+//		mUnityPlayer.windowFocusChanged(true);
 		mUnityPlayer.resume();
 
 		mButtonZoomIn = (Button)findViewById(R.id.zoomInButton);
